@@ -15,10 +15,11 @@
             <a href="{{ url('/liste/users') }}" class="item">Utilisateurs</a>
             @if (Auth::guest())
             <a href="{{ url('/login') }}" class="item">Connexion</a>
-            @else
-                @if(Auth::user()->hasRole('admin'))
-                    <a href="{{ url('/admin') }}" class="item">Administration</a>
-                @endif  
+            @endif
+            
+            @if(Auth::user()->hasRole('admin'))
+                <a href="{{ url('/admin') }}" class="item">Administration</a>
+            @endif  
             <div class="ui dropdown item">                       
                 {{ Auth::user()->name }} 
                 <i class="dropdown icon"></i>
