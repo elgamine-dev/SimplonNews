@@ -13,8 +13,7 @@ class Lien extends Model
 {
     use SoftDeletes;
     
-    protected $dates = ['deleted_at'];
-    protected $fillable = ['titre', 'lien', 'categorie'];
+    protected $fillable = ['titre', 'lien', 'categorie', 'langue'];
 
     public function user() {
     	return $this->belongsTo(User::class);
@@ -34,12 +33,8 @@ class Lien extends Model
         return $this->belongsToMany('App\Tag');
     }
 
-    public function liked(){
-        foreach ($this->likes as $like) {
-            if($like->user == Auth::user()){
-                return $like->val;
-            }
-        }
-        return false;
+    public function getVote($user) {
+        $like = $this->likes()->where('user_id', $user->id)->first();
+        return ($like) ? $like : false;
     }
 }

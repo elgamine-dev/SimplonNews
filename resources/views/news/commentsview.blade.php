@@ -1,5 +1,5 @@
 
-<div class="comment">
+<div class="comment" id="{{$comment->id}}">
     <a class="avatar"><img src="{{$comment->user->avatar?$comment->user->avatar:'http://lorempixel.com/600/600/cats'}}" /></a>
     <div class="content">
         <a href="{{ URL::route('user.profile', [$comment->user->id]) }}" class="author">{{$comment->user->name}}</a>
@@ -11,25 +11,14 @@
         </div>
         <div class="actions">
             {{ $comment->likes->sum('val') }}
-            @if($comment->liked())
-                <form class="inlineForm" action="{{ URL::route('comment.vote.del', [$comment->id]) }}" method="POST">
+                <form class="inlineForm" action="{{ URL::route('handleVote', [ 'table' => 'comments', 'item' => $comment->id, 'voteType' => 'upvote']) }}" method="POST">
                     {!! csrf_field() !!}
-                    @if($comment->liked() == 1)
-                        <button class="ui basic mini compact green button"><i class="checkmark icon"></i></button>
-                    @else
-                        <button class="ui basic mini compact red button"><i class="remove icon"></i></button>
-                    @endif
+                    <button class="ui basic mini compact button {{ Auth::check() && Auth::user()->hasUpvoted($comment)? 'green' : '' }}">+</button>
                 </form>
-            @else
-                <form class="inlineForm" action="{{ URL::route('comment.vote.up', [$comment->id]) }}" method="POST">
+                <form class="inlineForm" action="{{ URL::route('handleVote', [ 'table' => 'comments', 'item' => $comment->id, 'voteType' => 'downvote']) }}" method="POST">
                     {!! csrf_field() !!}
-                    <button class="ui basic mini compact button">+</button>
+                    <button class="ui basic mini compact button {{ Auth::check() && Auth::user()->hasDownvoted($comment)? 'red' : '' }}">-</button>
                 </form>
-                <form class="inlineForm" action="{{ URL::route('comment.vote.down', [$comment->id]) }}" method="POST">
-                    {!! csrf_field() !!}
-                    <button class="ui basic mini compact button">-</button>
-                </form>
-            @endif
             @if(Auth::check())
                 <a class="commentAction reply" act=".replyAct">Répondre</a>
                 @if (Auth::user()->id == $comment->user_id || Auth::user()->hasRole('admin'))
